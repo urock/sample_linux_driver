@@ -1,13 +1,3 @@
-/* *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- */
-
-
-
 #include "rosta-driver.h"
 
 #define ROSTA_DRIVER_VERSION		104 	// 1.02
@@ -42,7 +32,13 @@ module_param(rsp_minor, int, S_IRUGO);
 module_param(rsp_nr_devs, int, S_IRUGO);
 
 
-static DRIVER_ATTR(rosta_drv_cdev , S_IRUGO, show_cdev, NULL);
+
+static ssize_t rosta_drv_cdev_show(struct device_driver *driver, char *buf) {
+	return snprintf(buf, PAGE_SIZE, "%d %d %d\n", rsp_major, rsp_minor, ROSTA_DRIVER_VERSION);
+}
+
+
+static DRIVER_ATTR_RO(rosta_drv_cdev);
 static DEVICE_ATTR(rosta_dev_instance, S_IRUGO, show_instance, NULL);
 
 
@@ -122,10 +118,14 @@ int rsp_setup_dma(struct rsp_dma *dma, int direction, unsigned long data,
 	msg_dbg("init user [0x%lx+0x%x => %d pages]",data,size,dma->nr_pages);
 
 	down_read(&current->mm->mmap_sem);
+	// msg_err
+	// 		= get_user_pages(current, current->mm, data & PAGE_MASK,
+	// 				dma->nr_pages, direction == PCI_DMA_FROMDEVICE, 1,
+	// 				dma->pages, NULL);
 	msg_err
-			= get_user_pages(current, current->mm, data & PAGE_MASK,
-					dma->nr_pages, direction == PCI_DMA_FROMDEVICE, 1,
-					dma->pages, NULL);
+			= get_user_pages(data & PAGE_MASK,
+					dma->nr_pages, direction == PCI_DMA_FROMDEVICE,
+					dma->pages, NULL);	
 	up_read(&current->mm->mmap_sem);
 
 	if (msg_err == dma->nr_pages) {
@@ -644,7 +644,9 @@ static ssize_t rsp_read(struct file *filep, char *buf, size_t count,
 		for (i = 0; i < device->dma_w.nr_pages; i++) {
 			if (!PageReserved(device->dma_w.pages[i]))
 				SetPageDirty(device->dma_w.pages[i]);
-			page_cache_release(device->dma_w.pages[i]);
+			// page_cache_release(device->dma_w.pages[i]);
+			put_page(device->dma_w.pages[i]);
+
 		}
 
 		pci_unmap_sg(device->pdev, device->dma_w.sglist,
@@ -842,7 +844,9 @@ static ssize_t rsp_write(struct file *file, const char __user *buf,
 		for (i = 0; i < device->dma_r.nr_pages; i++) {
 			if (!PageReserved(device->dma_r.pages[i]))
 				SetPageDirty(device->dma_r.pages[i]);
-			page_cache_release(device->dma_r.pages[i]);
+			// page_cache_release(device->dma_r.pages[i]);
+			put_page(device->dma_r.pages[i]);
+			
 		}
 
 		msg_dbg(" pci_unmap_sg start");
@@ -1157,9 +1161,7 @@ static struct pci_driver rsp_driver = { .name = DRIVER_NAME, .id_table =
 		rsp_board_pci_tbl, .probe = rsp_board_probe, .remove =
 		rsp_board_remove, };
 
-static ssize_t show_cdev(struct device_driver *driver, char *buf) {
-	return snprintf(buf, PAGE_SIZE, "%d %d %d\n", rsp_major, rsp_minor, ROSTA_DRIVER_VERSION);
-}
+
 
 
 
