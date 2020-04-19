@@ -1,3 +1,6 @@
 *.o
 *.ko
 .*
+cmake-build-debug*
+build*
+.a
