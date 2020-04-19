@@ -5,10 +5,16 @@
 
 ## Инструкиця по сборке
 
+0. Скачать репозиторий
+
+```
+git clone git@github.com:urock/sample_linux_driver.git pcie_driver
+```
+
 1. Компиляция драйвера
 
 ```
-cd driver
+cd pcie_driver/driver
 make
 ```
 
@@ -17,6 +23,7 @@ make
 2. Компиляция библиотеки и теста
 
 ```
+cd pcie_driver
 mkdir build
 cd build
 cmake ..
@@ -28,9 +35,9 @@ make
 3. Запуск теста
 
 ```
-cd driver  
+cd pcie_driver/driver  
 sudo insmod rosta_drv.ko
-cd ../build
+cd pcie_driver/build
 ./device_test
 ```
 
