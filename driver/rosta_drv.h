@@ -20,11 +20,8 @@
 #include <linux/version.h>
 
 
-//#include "../include/rosta-common.h" 
-//#include "../ApiLib/include/RostaPCIeAPI.h"
-// #include "../ApiLib/include/RostaPCIeTypes.h"
-// #include "../ApiLib/include/RostaPCIeDefines.h"
-#include "../../ApiLib/LibPCIe/rosta_drv.h"
+#include "driver_exports.h"
+
 #define MAX_rsp_DEV 128
 #define MAX_rsp_BAR 5
 

@@ -1,4 +1,4 @@
-#include "rosta-driver.h"
+#include "rosta_drv.h"
 
 #define ROSTA_DRIVER_VERSION		104 	// 1.02
 
@@ -15,8 +15,7 @@
 #define TEST_ERROR(val) if (val < 0) return val;
 
 MODULE_DESCRIPTION("Generic device driver module for Rosta rsp cards <www.rosta.ru>");
-MODULE_AUTHOR("Alexey Shmatok <alexey.shmatok@gmail.com>, Yuri Rumyantsev <yarumyantsev@gmail.com>, "
-		"Vladimir Platonov <shaera.epine@gmail.com>");
+MODULE_AUTHOR("Alexey Shmatok <alexey.shmatok@gmail.com>, Yuri Rumyantsev <yarumyantsev@gmail.com>");
 MODULE_LICENSE("GPL");
 
 static char dev_present[MAX_DEVICES];
