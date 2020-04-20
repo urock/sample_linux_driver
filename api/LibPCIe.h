@@ -50,8 +50,8 @@ struct pci_device
 {
 	enum device_type dtype; 
 	
-	int major; /**< driver numbers */
-	int minor; /**< driver numbers */
+	int major_num; /**< driver numbers */
+	int minor_num; /**< driver numbers */
 	int version; 
 	unsigned vendor_id, device_id; /**< Set during locate */
 	unsigned subsys_vendor_id, subsys_device_id;

@@ -10,6 +10,7 @@
 
 static char temp[256];
 
+
 int rosta_pcie_print_device_info(struct pci_device *p)
 {
 	int i;
@@ -49,11 +50,11 @@ int rosta_pcie_open_device(struct pci_device *p)
 
 	struct stat buffer;
 	int r, fd;
-	int major, minor;
+	int major_num, minor_num;
 	char cmd_str[100];
 
-	major = p->major;
-	minor = p->minor;
+    major_num = p->major_num;
+    minor_num = p->minor_num;
 	
 	if (p->dtype != ROSTA_DEV) {
 		fprintf(stderr,"%s: wrong pointer to pci_device\n", __func__);
@@ -68,7 +69,7 @@ int rosta_pcie_open_device(struct pci_device *p)
 	if (r != 0)
 	{
 		// Node does not exists, create it
-		r = mknod(temp, 0777 | S_IFCHR,  makedev(major,minor + p->instance));
+		r = mknod(temp, 0777 | S_IFCHR,  makedev(major_num,minor_num + p->instance));
 		
 		sprintf(cmd_str,"chmod 777 %s",temp);
 		//printf("%s\n",cmd_str);
@@ -83,12 +84,12 @@ int rosta_pcie_open_device(struct pci_device *p)
 		r = 0;
 		
 		// Node exists, check parameters
-		if (major != major(buffer.st_rdev))
+		if (major_num != major(buffer.st_rdev))
 		{
 			r = 1;
 		}
 		
-		if ((minor + p->instance) != minor(buffer.st_rdev))
+		if ((minor_num + p->instance) != minor(buffer.st_rdev))
 		{
 			r = 1;
 		}
@@ -97,7 +98,7 @@ int rosta_pcie_open_device(struct pci_device *p)
 		{
 			// Node is wrong, delete and recreate
 			unlink(temp); // delete name or file from the system
-			r = mknod(temp, 0777 | S_IFCHR,  makedev(major,minor + p->instance));
+			r = mknod(temp, 0777 | S_IFCHR,  makedev(major_num,minor_num + p->instance));
 			
 			sprintf(cmd_str,"chmod 777 %s",temp);
 			//printf("%s\n",cmd_str);

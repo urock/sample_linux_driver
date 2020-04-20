@@ -72,14 +72,14 @@ int parsefile(const char *fname, const char *format, ...)
 
 
 // get rosta_drv driver numbers
-int get_driver_numbers(int *major, int *minor, int *version)
+int get_driver_numbers(int *major_num, int *minor_num, int *version)
 {
 	struct stat buffer; 
 	int r;
 	
 
-	*major = -1;
-	*minor = -1;
+	*major_num = -1;
+	*minor_num = -1;
 	*version = -1;
 	
 	r = stat(rosta_driver_path, &buffer);
@@ -96,15 +96,15 @@ int get_driver_numbers(int *major, int *minor, int *version)
 	
 	sprintf(temp, "%s/%s%s", rosta_driver_path, DRIVER_NAME,"_cdev");
 	
-	r = parsefile(temp,"%d %d %d", major, minor, version);
+	r = parsefile(temp,"%d %d %d", major_num, minor_num, version);
 	
 	if (r < 0)
 	{
 		return -4;
 	}
 	
-	if (*major < 0 || *major > 255) return -6;
-	if (*minor < 0 || *minor > 255) return -7;
+	if (*major_num < 0 || *major_num > 255) return -6;
+	if (*minor_num < 0 || *minor_num > 255) return -7;
 	
 	//	printf("Found device, major %d minor %d\n", *major, *minor);
 	
@@ -288,10 +288,10 @@ int rosta_pcie_find_devices(struct pci_device *pd, int verbose)
 	int ret_val;
 	int r, k;
 	struct pci_device pd_temp;
-	int major, minor, version;
+	int major_num, minor_num, version;
 
 
-	if (get_driver_numbers(&major, &minor, &version) < 0) {
+	if (get_driver_numbers(&major_num, &minor_num, &version) < 0) {
 		fprintf(stderr, "%s: Error getting driver numbers for rosta_dev (rosta_dev not loaded?)\n",__func__);
 		return -1;
 	}
@@ -317,8 +317,8 @@ int rosta_pcie_find_devices(struct pci_device *pd, int verbose)
 				pd_temp.phys_function, pd_temp.vendor_id, pd_temp.device_id);
 				
 
-			pd_temp.major = major;
-			pd_temp.minor = minor;
+			pd_temp.major_num = major_num;
+			pd_temp.minor_num = minor_num;
 			pd_temp.version = version; 
 			
 			pd_temp.dtype = ROSTA_DEV;
