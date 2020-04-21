@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 			ret_val = read_reg_test(pd[num].intfd);
 			if (ret_val < 0) 
 				printf("Error running BARs test\n");
-			rosta_pcie_close_device(&pd[i]);
+			rosta_pcie_close_device(&pd[num]);
 
 			}
 		 
