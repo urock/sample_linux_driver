@@ -398,7 +398,9 @@ static long rsp_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
 		reg32_io.data = ioread32(
 				(void *) ((unsigned long) rsp_dev->bar[bar].vaddr + offset));
 
-		if (copy_to_user((void *) arg, &reg32_io, sizeof(rsp5xx_reg32_io_t))) {
+        msg_err("RSP_REG32_READ: bar id=%d, offset=0x%x -> data = 0x%x\n",reg32_io.bar,reg32_io.offset,reg32_io.data);
+
+        if (copy_to_user((void *) arg, &reg32_io, sizeof(rsp5xx_reg32_io_t))) {
 			msg_err(" rsp_REG32_READ copy_to_user failed\n");
 			return -EFAULT;
 		}
