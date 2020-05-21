@@ -3,7 +3,7 @@
 
 int bar_test(int dev);
 int read_reg_test(int dev);
-
+int dma_test(int dev);
 
 
 int main(int argc, char *argv[])
@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
 		printf("\t 2 - Remove device from the system\n");
 		printf("\t 3 - Rescan Bus\n");		
 		printf("\t 4 - Read reg test\n");
+        printf("\t 5 - DMA test\n");
 		printf("\t q - to exit to device select menu\n");
 		
 
@@ -145,7 +146,16 @@ int main(int argc, char *argv[])
 			rosta_pcie_close_device(&pd[num]);
 
 			}
-		 
+        else if (ch == '5') {
+            printf("Running DMA test\n");
+            do_and_test(rosta_pcie_open_device,(&pd[num]));
+
+            ret_val = dma_test(pd[num].intfd);
+            if (ret_val < 0)
+                printf("Error running DMA test\n");
+
+            rosta_pcie_close_device(&pd[num]);
+        }
 
 		}
 	}
@@ -240,3 +250,66 @@ int bar_test(int dev) {
 	return 0;
 }
 
+/*
+ * Perform simple write-read test.
+ * Assuming that FPGA User IP CommandReg (offset = 0х100) has default value = 0 and FIFOs are looped RX => TX
+ */
+int dma_test(int dev) {
+
+    unsigned int *wr_buf;
+    unsigned int *rd_buf;
+    unsigned int len_dwords = 256;
+
+    // set CommandReg = 0 to loop fifos
+    rosta_pcie_write_reg_legacy(dev, 0, 256, 0);
+
+    // allocate page alligned buffer
+    int ret_val;
+
+    posix_memalign(&wr_buf, 4096, len_dwords);
+    ret_val = posix_memalign(&rd_buf, 4096, len_dwords);
+
+    // exit on error
+    if (ret_val) {
+        printf("Error in posix_memalign\n");
+        return ret_val;
+    }
+
+    //fill buffer
+    for (unsigned int i = 0; i < len_dwords; i++) {
+        wr_buf[i] = i;
+        rd_buf[i] = 0;
+    }
+
+
+    // transfer data to and from device
+    if (rosta_pcie_write_dma_legacy(dev, wr_buf, len_dwords*4)){
+        printf("Error in write dma\n");
+        return -1;
+    }
+
+    printf("Write dma OK\n");
+
+    if (rosta_pcie_read_dma_legacy(dev, rd_buf, len_dwords*4)){
+        printf("Error in read dma\n");
+        return -1;
+    }
+
+    printf("Read dma OK\n");
+
+    int error_cnt = 0;
+    //compare data
+    for (int i = 0; i < len_dwords; i++) {
+        if (rd_buf[i] != wr_buf[i]) {
+            printf("0x%x <-> 0x%x\n", rd_buf[i], wr_buf[i]);
+            error_cnt++;
+        }
+    }
+
+    if (error_cnt == 0)
+        printf("DMA Test OK\n");
+    else
+        printf("DMA test Error cnt = %d\n", error_cnt);
+
+    return 0;
+}
