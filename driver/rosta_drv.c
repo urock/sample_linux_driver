@@ -911,7 +911,7 @@ static int rsp_board_map_bar(struct pci_dev* dev, struct rsp_device* dev_ptr,
 		goto msg_err_bar_map;
 
 	} else { // Resource MEMORY
-		msg_dbg(" found MEM BAR%d region at phys. addr. %lx with size %lx.\n",num,
+		msg_dbg(" found MEM BAR %d region at phys. addr. %lx with size %lx.\n",num,
 				dev_ptr->bar[num].addr, dev_ptr->bar[num].size);
 		dev_ptr->bar[num].io_port = 0;
 
@@ -929,7 +929,7 @@ static int rsp_board_map_bar(struct pci_dev* dev, struct rsp_device* dev_ptr,
 			goto msg_err_bar_map;
 		}
 
-		msg_dbg(" remapped MEM BAR%d: %lx to vaddr %p\n",num,
+		msg_dbg(" remapped MEM BAR %d: %lx to vaddr %p\n",num,
 				dev_ptr->bar[num].addr,dev_ptr->bar[num].vaddr);
 	}
 
@@ -1149,7 +1149,7 @@ static void rsp_board_remove(struct pci_dev *dev) {
 }
 
 static struct pci_device_id rsp_board_pci_tbl[] = { 
-		{ 0x1819, 0x0527, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 }, 
+		{ 0x10EE, 0x0705, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 }, 
 		{ 0x1819, 0x0529, PCI_ANY_ID, PCI_ANY_ID, 0, 0,	0 }, 
 		{ 0x1819, 0xB007, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 		{ 0x1819, 0x0047, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
