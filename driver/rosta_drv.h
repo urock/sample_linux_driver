@@ -74,9 +74,11 @@
 
 
 struct rsp_bar {
- unsigned long addr;
+    phys_addr_t addr;
+// unsigned long addr;
  unsigned long size;
- volatile unsigned long* vaddr;
+// volatile unsigned long* vaddr;
+    volatile phys_addr_t *vaddr;
  int io_port; // added by Yuri to distinguish between MEM and PORT regions
 };
 
