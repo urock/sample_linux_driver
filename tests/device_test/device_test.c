@@ -259,6 +259,7 @@ int dma_test(int dev) {
     unsigned int *wr_buf;
     unsigned int *rd_buf;
     unsigned int len_dwords = 256;
+    unsigned int i;
 
     // set CommandReg = 0 to loop fifos
     rosta_pcie_write_reg_legacy(dev, 0, 256, 0);
@@ -276,7 +277,7 @@ int dma_test(int dev) {
     }
 
     //fill buffer
-    for (unsigned int i = 0; i < len_dwords; i++) {
+    for (i = 0; i < len_dwords; i++) {
         wr_buf[i] = i;
         rd_buf[i] = 0;
     }
@@ -299,7 +300,7 @@ int dma_test(int dev) {
 
     int error_cnt = 0;
     //compare data
-    for (int i = 0; i < len_dwords; i++) {
+    for (i = 0; i < len_dwords; i++) {
         if (rd_buf[i] != wr_buf[i]) {
             printf("0x%x <-> 0x%x\n", rd_buf[i], wr_buf[i]);
             error_cnt++;
