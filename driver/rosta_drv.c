@@ -911,7 +911,7 @@ static int rsp_board_map_bar(struct pci_dev* dev, struct rsp_device* dev_ptr,
 		goto msg_err_bar_map;
 
 	} else { // Resource MEMORY
-		msg_dbg(" found MEM BAR %d region at phys. addr. %lx with size %lx.\n",num,
+		msg_dbg(" found MEM BAR %d region at phys. addr. %llx with size %lx.\n",num,
 				dev_ptr->bar[num].addr, dev_ptr->bar[num].size);
 		dev_ptr->bar[num].io_port = 0;
 
